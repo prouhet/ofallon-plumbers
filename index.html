@@ -902,34 +902,39 @@
             
             <div class="filters">
                 <div class="filter-group">
-                    <label for="type-filter">Business Type</label>
-                    <select id="type-filter">
-                        <option value="all">All Types</option>
-                        <option value="emergency">Emergency Specialists</option>
-                        <option value="fullservice">Full-Service Plumbing</option>
-                        <option value="residential">Residential Specialists</option>
-                        <option value="remodeling">Remodeling Specialists</option>
+                    <label for="situation-filter">Your Plumbing Situation</label>
+                    <select id="situation-filter">
+                        <option value="all">All Situations</option>
+                        <option value="flooding">Flooding/No Water</option>
+                        <option value="clogged">Clogged drain/toilet/sewer backup</option>
+                        <option value="leaky">Leaky faucet/toilet/fixture repair</option>
+                        <option value="waterheater">No hot water/water heater issues</option>
+                        <option value="remodel">Remodel/new installation</option>
+                        <option value="maintenance">Routine Maintenance</option>
                         <option value="commercial">Commercial Plumbing</option>
                     </select>
                 </div>
                 
                 <div class="filter-group">
-                    <label for="availability-filter">Availability</label>
-                    <select id="availability-filter">
-                        <option value="all">All Hours</option>
-                        <option value="emergency">24/7 Emergency</option>
-                        <option value="extended">Extended Hours</option>
-                        <option value="standard">Standard Hours</option>
+                    <label for="timing-filter">When You Need Service</label>
+                    <select id="timing-filter">
+                        <option value="all">Any Time</option>
+                        <option value="emergency">Right now - it's an emergency!</option>
+                        <option value="today">Today or tomorrow</option>
+                        <option value="week">This week is fine</option>
+                        <option value="future">Making Plans for the Future</option>
                     </select>
                 </div>
                 
                 <div class="filter-group">
-                    <label for="location-filter">Location</label>
-                    <select id="location-filter">
-                        <option value="all">All Areas</option>
-                        <option value="ofallon">O'Fallon Based</option>
-                        <option value="metro">Metro East</option>
-                        <option value="regional">Regional Coverage</option>
+                    <label for="priority-filter">What Matters Most</label>
+                    <select id="priority-filter">
+                        <option value="all">All Options</option>
+                        <option value="rated">Highest rated & most reviews</option>
+                        <option value="affordable">Affordable/budget-friendly</option>
+                        <option value="fast">Fastest response time</option>
+                        <option value="financing">Financing/payment options</option>
+                        <option value="warranty">Warranty/guarantee</option>
                     </select>
                 </div>
             </div>
@@ -2130,67 +2135,201 @@
 
         // Setup filter functionality
         function setupFilters() {
-            const typeFilter = document.getElementById('type-filter');
-            const availabilityFilter = document.getElementById('availability-filter');
-            const locationFilter = document.getElementById('location-filter');
+            const situationFilter = document.getElementById('situation-filter');
+            const timingFilter = document.getElementById('timing-filter');
+            const priorityFilter = document.getElementById('priority-filter');
             
-            if (!typeFilter || !availabilityFilter || !locationFilter) {
+            if (!situationFilter || !timingFilter || !priorityFilter) {
                 console.warn('⚠️ Filter elements not found');
                 return;
             }
             
             const applyFilters = () => {
-                const typeValue = typeFilter.value;
-                const availabilityValue = availabilityFilter.value;
-                const locationValue = locationFilter.value;
+                const situationValue = situationFilter.value;
+                const timingValue = timingFilter.value;
+                const priorityValue = priorityFilter.value;
                 
-                console.log('🔍 Applying filters:', { typeValue, availabilityValue, locationValue });
+                console.log('🔍 Applying filters:', { situationValue, timingValue, priorityValue });
                 
-                const filteredPlumbers = plumbersData.filter(plumber => {
-                    // Type filter
-                    if (typeValue !== 'all') {
-                        const plumberTypeLower = plumber.type.toLowerCase();
-                        let typeMatch = false;
+                let filteredPlumbers = plumbersData.filter(plumber => {
+                    // Situation filter
+                    if (situationValue !== 'all') {
+                        let situationMatch = true;
                         
-                        switch(typeValue) {
-                            case 'emergency':
-                                typeMatch = plumberTypeLower.includes('emergency');
+                        switch(situationValue) {
+                            case 'flooding':
+                                // Emergency services, water line specialists
+                                situationMatch = plumber.emergencyService || 
+                                               plumber.specialties.some(s => s.toLowerCase().includes('emergency')) ||
+                                               plumber.services.some(s => s.toLowerCase().includes('emergency'));
                                 break;
-                            case 'fullservice':
-                                typeMatch = plumberTypeLower.includes('full-service');
+                            case 'clogged':
+                                // Drain cleaning, sewer specialists
+                                situationMatch = plumber.services.some(s => 
+                                    s.toLowerCase().includes('drain') || 
+                                    s.toLowerCase().includes('sewer')) ||
+                                    plumber.specialties.some(s => 
+                                        s.toLowerCase().includes('drain') || 
+                                        s.toLowerCase().includes('sewer'));
                                 break;
-                            case 'residential':
-                                typeMatch = plumberTypeLower.includes('residential');
+                            case 'leaky':
+                                // General plumbing, fixture repair
+                                situationMatch = plumber.services.some(s => 
+                                    s.toLowerCase().includes('repair') || 
+                                    s.toLowerCase().includes('plumbing')) ||
+                                    plumber.type.toLowerCase().includes('full-service');
                                 break;
-                            case 'remodeling':
-                                typeMatch = plumberTypeLower.includes('remodeling');
+                            case 'waterheater':
+                                // Water heater specialists
+                                situationMatch = plumber.services.some(s => 
+                                    s.toLowerCase().includes('water heater')) ||
+                                    plumber.specialties.some(s => 
+                                        s.toLowerCase().includes('water heater'));
+                                break;
+                            case 'remodel':
+                                // Remodeling specialists
+                                situationMatch = plumber.type.toLowerCase().includes('remodeling') ||
+                                               plumber.services.some(s => s.toLowerCase().includes('remodeling')) ||
+                                               plumber.specialties.some(s => s.toLowerCase().includes('remodel'));
+                                break;
+                            case 'maintenance':
+                                // General service providers
+                                situationMatch = plumber.type.toLowerCase().includes('full-service') ||
+                                               plumber.type.toLowerCase().includes('residential');
                                 break;
                             case 'commercial':
-                                typeMatch = plumberTypeLower.includes('commercial');
+                                // Commercial service providers
+                                situationMatch = plumber.services.some(s => s.toLowerCase().includes('commercial')) ||
+                                               plumber.type.toLowerCase().includes('commercial') ||
+                                               plumber.features.some(f => f.toLowerCase().includes('commercial'));
                                 break;
-                            default:
-                                typeMatch = plumberTypeLower.includes(typeValue);
                         }
                         
-                        if (!typeMatch) return false;
+                        if (!situationMatch) return false;
                     }
                     
-                    // Availability filter
-                    if (availabilityValue !== 'all') {
-                        if (availabilityValue === 'emergency' && !plumber.availability.includes('Emergency')) return false;
-                        if (availabilityValue === 'extended' && !plumber.availability.includes('Emergency') && !plumber.availability.includes('Extended')) return false;
-                        if (availabilityValue === 'standard' && plumber.availability !== 'Standard Hours') return false;
-                    }
-                    
-                    // Location filter
-                    if (locationValue !== 'all') {
-                        if (locationValue === 'ofallon' && plumber.location !== 'O\'Fallon') return false;
-                        if (locationValue === 'metro' && plumber.location !== 'Metro East') return false;
-                        if (locationValue === 'regional' && plumber.location !== 'Regional') return false;
+                    // Timing filter
+                    if (timingValue !== 'all') {
+                        let timingMatch = true;
+                        
+                        switch(timingValue) {
+                            case 'emergency':
+                                // Only true 24/7 emergency services
+                                timingMatch = plumber.emergencyService && 
+                                            plumber.availability.includes('Emergency');
+                                break;
+                            case 'today':
+                                // Emergency or same-day service
+                                timingMatch = plumber.emergencyService ||
+                                            plumber.features.some(f => f.toLowerCase().includes('same-day')) ||
+                                            plumber.amenities.some(a => a.toLowerCase().includes('same-day'));
+                                break;
+                            case 'week':
+                                // Any service provider (most can schedule within a week)
+                                timingMatch = true;
+                                break;
+                            case 'future':
+                                // Planning/project focused, especially those offering free estimates
+                                timingMatch = plumber.features.some(f => f.toLowerCase().includes('estimate')) ||
+                                            plumber.amenities.some(a => a.toLowerCase().includes('estimate')) ||
+                                            plumber.type.toLowerCase().includes('remodeling');
+                                break;
+                        }
+                        
+                        if (!timingMatch) return false;
                     }
                     
                     return true;
                 });
+                
+                // Priority filter - this affects sorting rather than filtering
+                if (priorityValue !== 'all') {
+                    switch(priorityValue) {
+                        case 'rated':
+                            // Sort by rating and review count
+                            filteredPlumbers.sort((a, b) => {
+                                if (a.isPremium && !b.isPremium) return -1;
+                                if (!a.isPremium && b.isPremium) return 1;
+                                
+                                const scoreA = a.rating * Math.log(a.reviews + 1);
+                                const scoreB = b.rating * Math.log(b.reviews + 1);
+                                return scoreB - scoreA;
+                            });
+                            break;
+                        case 'affordable':
+                            // Sort by affordability indicators
+                            filteredPlumbers.sort((a, b) => {
+                                if (a.isPremium && !b.isPremium) return -1;
+                                if (!a.isPremium && b.isPremium) return 1;
+                                
+                                const affordableA = a.features.some(f => 
+                                    f.toLowerCase().includes('affordable') || 
+                                    f.toLowerCase().includes('fair pricing') ||
+                                    f.toLowerCase().includes('budget')) ? 1 : 0;
+                                const affordableB = b.features.some(f => 
+                                    f.toLowerCase().includes('affordable') || 
+                                    f.toLowerCase().includes('fair pricing') ||
+                                    f.toLowerCase().includes('budget')) ? 1 : 0;
+                                return affordableB - affordableA;
+                            });
+                            break;
+                        case 'fast':
+                            // Sort by emergency service and response time
+                            filteredPlumbers.sort((a, b) => {
+                                if (a.isPremium && !b.isPremium) return -1;
+                                if (!a.isPremium && b.isPremium) return 1;
+                                
+                                const fastA = (a.emergencyService ? 2 : 0) + 
+                                            (a.features.some(f => f.toLowerCase().includes('fast') || 
+                                                                 f.toLowerCase().includes('rapid') ||
+                                                                 f.toLowerCase().includes('same-day')) ? 1 : 0);
+                                const fastB = (b.emergencyService ? 2 : 0) + 
+                                            (b.features.some(f => f.toLowerCase().includes('fast') || 
+                                                                 f.toLowerCase().includes('rapid') ||
+                                                                 f.toLowerCase().includes('same-day')) ? 1 : 0);
+                                return fastB - fastA;
+                            });
+                            break;
+                        case 'financing':
+                            // Sort by financing availability
+                            filteredPlumbers.sort((a, b) => {
+                                if (a.isPremium && !b.isPremium) return -1;
+                                if (!a.isPremium && b.isPremium) return 1;
+                                
+                                const financingA = a.amenities.some(am => am.toLowerCase().includes('financing')) ? 1 : 0;
+                                const financingB = b.amenities.some(am => am.toLowerCase().includes('financing')) ? 1 : 0;
+                                return financingB - financingA;
+                            });
+                            break;
+                        case 'warranty':
+                            // Sort by warranty/guarantee mentions
+                            filteredPlumbers.sort((a, b) => {
+                                if (a.isPremium && !b.isPremium) return -1;
+                                if (!a.isPremium && b.isPremium) return 1;
+                                
+                                const warrantyA = (a.features.some(f => 
+                                    f.toLowerCase().includes('guarantee') || 
+                                    f.toLowerCase().includes('warranty')) ? 1 : 0) +
+                                    (a.amenities.some(am => 
+                                        am.toLowerCase().includes('guarantee') || 
+                                        am.toLowerCase().includes('warranty')) ? 1 : 0);
+                                const warrantyB = (b.features.some(f => 
+                                    f.toLowerCase().includes('guarantee') || 
+                                    f.toLowerCase().includes('warranty')) ? 1 : 0) +
+                                    (b.amenities.some(am => 
+                                        am.toLowerCase().includes('guarantee') || 
+                                        am.toLowerCase().includes('warranty')) ? 1 : 0);
+                                return warrantyB - warrantyA;
+                            });
+                            break;
+                        default:
+                            // Default sorting (premium first, then rating)
+                            filteredPlumbers = sortPlumbersForDisplay(filteredPlumbers);
+                    }
+                } else {
+                    // Default sorting when no priority filter
+                    filteredPlumbers = sortPlumbersForDisplay(filteredPlumbers);
+                }
                 
                 console.log('✅ Filtered results:', filteredPlumbers.length, 'plumbers');
                 
@@ -2198,9 +2337,9 @@
                 updateTableWithFilteredData(filteredPlumbers);
             };
             
-            typeFilter.addEventListener('change', applyFilters);
-            availabilityFilter.addEventListener('change', applyFilters);
-            locationFilter.addEventListener('change', applyFilters);
+            situationFilter.addEventListener('change', applyFilters);
+            timingFilter.addEventListener('change', applyFilters);
+            priorityFilter.addEventListener('change', applyFilters);
         }
 
         // Update table with filtered data
