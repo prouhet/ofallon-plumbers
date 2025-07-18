@@ -317,20 +317,46 @@ function loadCrossNavigation() {
         contactSection.insertAdjacentHTML('afterend', crossNavHTML);
         console.log('✅ Cross-navigation HTML injected');
         
-        // Highlight current site
+        // Highlight current site with enhanced plumber detection
         const currentDomain = window.location.hostname;
         const dirCards = document.querySelectorAll('.dir-card');
         
         dirCards.forEach(card => {
             try {
                 const cardUrl = new URL(card.href);
+                let isCurrentSite = false;
+                
+                // Check for exact domain match
                 if (cardUrl.hostname === currentDomain) {
+                    isCurrentSite = true;
+                }
+                
+                // Enhanced plumber site detection
+                const isCurrentPlumberSite = (
+                    currentDomain.includes('plumber') || 
+                    currentDomain.includes('plumbing') ||
+                    currentDomain === 'plumberofallon.com'
+                );
+                
+                const isPlumberCard = (
+                    cardUrl.hostname.includes('plumber') || 
+                    card.classList.contains('plumbing') ||
+                    card.href.includes('plumberofallon') ||
+                    card.querySelector('h3').textContent.includes('Plumber')
+                );
+                
+                if (isCurrentPlumberSite && isPlumberCard) {
+                    isCurrentSite = true;
+                }
+                
+                if (isCurrentSite) {
                     card.classList.add('current-site');
-                    console.log('🎯 Current site highlighted:', currentDomain);
+                    console.log('🎯 Current plumber site highlighted:', currentDomain, '-> Card:', cardUrl.hostname);
                     
                     // Prevent navigation to current page
                     card.addEventListener('click', function(e) {
                         e.preventDefault();
+                        console.log('🚫 Prevented navigation to current page');
                     });
                 }
             } catch (e) {
@@ -343,6 +369,7 @@ function loadCrossNavigation() {
 }
 
 console.log('📦 Plumber Footer.js loaded successfully');
+console.log('🔍 Current domain detected:', window.location.hostname);
 
 // Auto-execute with proper timing
 function initializeFooter() {
