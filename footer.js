@@ -331,11 +331,12 @@ function loadCrossNavigation() {
                     isCurrentSite = true;
                 }
                 
-                // Enhanced plumber site detection
+                // Enhanced plumber site detection for both domains
                 const isCurrentPlumberSite = (
                     currentDomain.includes('plumber') || 
                     currentDomain.includes('plumbing') ||
-                    currentDomain === 'plumberofallon.com'
+                    currentDomain === 'plumberofallon.com' ||
+                    currentDomain === 'plumbers-ofallon.com'
                 );
                 
                 const isPlumberCard = (
