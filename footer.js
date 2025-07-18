@@ -1,4 +1,6 @@
 // footer.js - Complete Footer with Cross-Directory Navigation for O'Fallon Plumbers Directory
+// Updated to match working lawn services footer pattern
+
 const crossNavHTML = `
 <!-- CROSS-DIRECTORY NAVIGATION SECTION -->
 <section id="directories" class="other-directories" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); padding: 60px 0; margin-top: 40px;">
@@ -128,7 +130,7 @@ const crossNavHTML = `
                         <h3 style="margin: 0; font-size: 1.3rem; color: #2c5aa0; font-weight: bold;">Plumbers</h3>
                     </div>
                     <span style="background: #2b6cb0; color: white; padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;">
-                        Compare 20+
+                        Compare 14+
                     </span>
                 </div>
                 <p style="margin: 0; font-size: 1rem; color: #666; line-height: 1.5;">
@@ -145,7 +147,7 @@ const crossNavHTML = `
                         <h3 style="margin: 0; font-size: 1.3rem; color: #2c5aa0; font-weight: bold;">Lawn Services</h3>
                     </div>
                     <span style="background: #68d391; color: white; padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;">
-                        Compare 26+
+                        Compare 16+
                     </span>
                 </div>
                 <p style="margin: 0; font-size: 1rem; color: #666; line-height: 1.5;">
@@ -315,20 +317,16 @@ function loadCrossNavigation() {
         contactSection.insertAdjacentHTML('afterend', crossNavHTML);
         console.log('✅ Cross-navigation HTML injected');
         
-        // Highlight current site for plumber domains
+        // Highlight current site
         const currentDomain = window.location.hostname;
         const dirCards = document.querySelectorAll('.dir-card');
         
         dirCards.forEach(card => {
             try {
                 const cardUrl = new URL(card.href);
-                
-                // Check for plumber domain variations
-                if (cardUrl.hostname === currentDomain || 
-                    (currentDomain.includes('plumber') && cardUrl.hostname.includes('plumberofallon')) ||
-                    (currentDomain.includes('ofallon') && currentDomain.includes('plumber'))) {
+                if (cardUrl.hostname === currentDomain) {
                     card.classList.add('current-site');
-                    console.log('🎯 Current plumber site highlighted:', currentDomain);
+                    console.log('🎯 Current site highlighted:', currentDomain);
                     
                     // Prevent navigation to current page
                     card.addEventListener('click', function(e) {
